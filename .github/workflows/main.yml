@@ -1,0 +1,57 @@
+name: 全球 AI 每日快報自動化流水線
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # 每天香港時間早上 8:00 自動執行
+  workflow_dispatch: # 允許老闆隨時在 GitHub 網頁上手動點擊觸發
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: 🚀 複製儲存庫代碼
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+
+    - name: 🐍 設置 Python 環境
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+
+    - name: 🔤 安裝 Linux 中文字體 (防止 Pillow 畫圖變亂碼)
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y fonts-wqy-zenhei
+
+    - name: 📦 安裝項目依賴套件
+      run: |
+        pip install -r requirements.txt
+
+    - name: 🧠 執行核心大腦運作 (抓取 + AI 聚合 + 畫圖 + 寫文案)
+      env:
+        API_TYPE: ${{ secrets.API_TYPE }}
+        BASE_URL: ${{ secrets.BASE_URL }}
+        LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+        MODEL_NAME: ${{ secrets.MODEL_NAME }}
+        SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+        SENDER_EMAIL: ${{ secrets.SENDER_EMAIL }}
+        RECEIVER_EMAIL: ${{ secrets.RECEIVER_EMAIL }}
+      run: |
+        python update_news.py
+
+    - name: 🛡️ 安全推送數據與圖片回 GitHub
+      run: |
+        git config --global user.name "GitHub Actions Bot"
+        git config --global user.email "actions@github.com"
+        git add data.json ig_today.png
+        git diff-index --quiet HEAD || git commit -m "🤖 自動更新：今日 AI 簡報與社交媒體字卡 [skip ci]"
+        git pull --rebase origin main
+        git push origin main
+
+    - name: 🌐 自動部署前端網頁到 GitHub Pages
+      uses: JamesIves/github-pages-deploy-action@v4
+      with:
+        folder: .
+        branch: gh-pages
