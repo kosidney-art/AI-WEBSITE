@@ -10,37 +10,47 @@
     <div class="max-w-4xl mx-auto">
         <header class="border-b border-slate-800 pb-6 mb-8 flex justify-between items-center">
             <div>
-                <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r bg-sky-400 to-indigo-400">全球 AI 每日快報</h1>
-                <p class="text-slate-400 text-sm mt-1">本地 Mock 測試面板</p>
+                <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-400">全球 AI 每日快報</h1>
+                <p class="text-slate-400 text-sm mt-1">🤖 雲端 AI 智慧篩選 • 24小時無人值守</p>
             </div>
-            <span class="bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 text-xs px-3 py-1 rounded-full font-medium">IG 矩陣同步中</span>
+            <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-xs px-3 py-1 rounded-full font-medium animate-pulse">● 雲端運行中</span>
         </header>
         
         <div id="news-container" class="grid gap-6">
-            <div class="animate-pulse flex space-x-4">
-                <div class="flex-1 space-y-4 py-1"><div class="h-4 bg-slate-800 rounded"></div><div class="space-y-2"><div class="h-4 bg-slate-800 rounded"></div></div></div>
             </div>
-        </div>
     </div>
 
     <script>
-        fetch('data.json')
+        fetch('data.json?t=' + new Date().getTime()) // 防止瀏覽器快取舊數據
             .then(res => res.json())
             .then(data => {
                 const container = document.getElementById('news-container');
+                if(!data || data.length === 0) {
+                    container.innerHTML = `<p class="text-slate-400">目前暫無新聞數據，請確保自動化流水線已成功運行。</p>`;
+                    return;
+                }
                 container.innerHTML = data.map(item => `
-                    <div class="bg-slate-800/50 p-6 rounded-2xl border border-slate-700/50 shadow-xl backdrop-blur-sm transition-all hover:border-sky-500/50">
-                        <div class="flex justify-between items-start mb-3">
-                            <span class="inline-block bg-sky-500/10 text-sky-400 border border-sky-500/20 text-xs px-2.5 py-1 rounded-md font-semibold">${item.category}</span>
+                    <div class="bg-slate-800/40 p-6 rounded-2xl border border-slate-700/50 shadow-xl backdrop-blur-sm transition-all hover:border-sky-500/50 flex flex-col justify-between">
+                        <div>
+                            <div class="flex justify-between items-start mb-3">
+                                <span class="inline-block bg-sky-500/10 text-sky-400 border border-sky-500/20 text-xs px-2.5 py-1 rounded-md font-semibold">${item.category}</span>
+                            </div>
+                            <h2 class="text-xl font-bold mb-4 text-slate-50">${item.title}</h2>
+                            <ul class="list-disc pl-5 space-y-2 text-slate-300 text-sm leading-relaxed mb-6">
+                                ${item.summary.map(s => `<li>${s}</li>`).join('')}
+                            </ul>
                         </div>
-                        <h2 class="text-xl font-bold mb-4 text-slate-50">${item.title}</h2>
-                        <ul class="list-disc pl-5 space-y-2 text-slate-300 text-sm leading-relaxed">
-                            ${item.summary.map(s => `<li>${s}</li>`).join('')}
-                        </ul>
+                        ${item.url ? `
+                        <div class="mt-2 border-t border-slate-700/50 pt-4 flex justify-end">
+                            <a href="${item.url}" target="_blank" class="bg-sky-500 hover:bg-sky-600 text-slate-900 text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-lg shadow-sky-500/20 flex items-center gap-1">
+                                🌐 閱讀新聞原文 ➔
+                            </a>
+                        </div>
+                        ` : ''}
                     </div>
                 `).join('');
             }).catch(err => {
-                document.getElementById('news-container').innerHTML = `<p class="text-rose-400">未偵測到 data.json，請先執行 mock_test.py 生成數據。</p>`;
+                document.getElementById('news-container').innerHTML = `<p class="text-rose-400">數據讀取失敗，請確認 data.json 是否存在。</p>`;
             });
     </script>
 </body>
