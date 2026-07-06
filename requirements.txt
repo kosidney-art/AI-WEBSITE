@@ -1,0 +1,6 @@
+feedparser
+requests
+anthropic
+openai
+Pillow
+edge-tts
