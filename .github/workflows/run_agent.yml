@@ -1,10 +1,10 @@
 name: 24H 雲端 AI 高層自動聯網作戰流程
 
 on:
-  # 1. 允許老細你在 GitHub Actions 頁面隨時手動「撳掣一鍵開機」
+  # 1. 允許老細你在 GitHub Actions 頁面隨時手動「一鍵開機」
   workflow_dispatch:
   
-  # 2. 設定定時自動開機（例如每 6 小時全自動執行一次，完全無人值守）
+  # 2. 設定定時自動開機（每 6 小時全自動執行一次，完全無人值守）
   schedule:
     - cron: '0 */6 * * *'
 
@@ -17,9 +17,9 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    # 🐍 步驟二：喺雲端架設 Python 網絡運行環境
+    # 🐍 步驟二：喺雲端架設正確嘅 Python 環境（已修正為 setup-python）
     - name: Set up Python
-      uses: actions/checkout@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
