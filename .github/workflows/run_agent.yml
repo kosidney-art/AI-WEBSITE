@@ -1,0 +1,48 @@
+name: 24H 雲端 AI 高層自動聯網作戰流程
+
+on:
+  # 1. 允許老細你在 GitHub Actions 頁面隨時手動「撳掣一鍵開機」
+  workflow_dispatch:
+  
+  # 2. 設定定時自動開機（例如每 6 小時全自動執行一次，完全無人值守）
+  schedule:
+    - cron: '0 */6 * * *'
+
+jobs:
+  run-corporate-brain:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 🏎️ 步驟一：拉取老細最新嘅代碼
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    # 🐍 步驟二：喺雲端架設 Python 網絡運行環境
+    - name: Set up Python
+      uses: actions/checkout@v4
+      with:
+        python-version: '3.10'
+
+    # 📦 步驟三：自動安裝所有網絡傳輸晶片與免費搜尋套件
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests duckduckgo_search
+
+    # 🧠 步驟四：正式開機！執行 office_agent.py 進行聯網撈料、高層吵架
+    - name: Run AI C-Suite Agent
+      env:
+        LLM_API_KEY: ${{ secrets.LLM_API_KEY }}
+        TG_BOT_TOKEN: ${{ secrets.TG_BOT_TOKEN }}
+        TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
+      run: |
+        python office_agent.py
+
+    # 💾 步驟五：將高層會議完工、撈到嘅最新 JSON 資料自動儲存並推送到網頁更新
+    - name: Commit and Push Updated Data
+      run: |
+        git config --global user.name "GitHub Action Bot"
+        git config --global user.email "actions@github.com"
+        git add office_log.json data.json tasks.json || true
+        git commit -m "🤖 報告老細：雲端 AI 高層已完成最新聯網搜尋與資料更新" || true
+        git push
